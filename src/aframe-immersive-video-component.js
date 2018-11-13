@@ -11,7 +11,7 @@ AFRAME.registerComponent('immersive-video', {
   schema: {
       source: {type: 'string', default: ""},
 //         source: {type: 'string', default: ""},
-//         theme: {'type': 'string', default: ""},
+      theme: {'type': 'string', default: "dark"},
       type: {type: 'string', default: "360"},
   },
 
@@ -144,6 +144,20 @@ AFRAME.registerComponent('immersive-video', {
                 self.video.play();
 
                 self.el.appendChild(self.stereo_right_sphere);
+
+                // And now, attach media controls
+
+                self.media_controls = document.createElement("a-entity");
+
+                self.media_controls.setAttribute("uipack-mediacontrols", {'src': "#" + video_id,
+                    width: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_width,
+                    height: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_height,
+                    theme: self.data.theme,
+                    button_radius: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_button_radius});
+
+                self.media_controls.setAttribute("position", "0 " + AFRAME_UIPACK.UIPACK_CONSTANTS.offset_player + " 0");
+
+                self.el.appendChild(self.media_controls);
 
 
             }
