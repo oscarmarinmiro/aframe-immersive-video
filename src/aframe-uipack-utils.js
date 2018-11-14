@@ -60,9 +60,9 @@ AFRAME_UIPACK.utils = {
 
         self.theme_data = AFRAME_UIPACK.themes[theme];
 
-        console.log("SETTING CURSOR");
-
-        console.log("HEADSET", AFRAME.utils.checkHeadsetConnected(), AFRAME.utils.isMobile(), AFRAME.utils.isGearVR(), navigator.userAgent);
+        // console.log("SETTING CURSOR");
+        //
+        // console.log("HEADSET", AFRAME.utils.checkHeadsetConnected(), AFRAME.utils.isMobile(), AFRAME.utils.isGearVR(), navigator.userAgent);
 
         var mobile = AFRAME.utils.isMobile();
         var headset = AFRAME.utils.checkHeadsetConnected();
@@ -71,7 +71,7 @@ AFRAME_UIPACK.utils = {
 
         self.cursor = document.createElement("a-entity");
 
-        console.log("CAMERA", self.camera);
+        // console.log("CAMERA", self.camera);
 
         self.camera.appendChild(self.cursor);
 

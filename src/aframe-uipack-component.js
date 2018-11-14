@@ -485,7 +485,7 @@ AFRAME.registerComponent('uipack-button', {
 
     // CHange material, radius, position and rotation
 
-    console.log("UPDATING BUTTON:")
+    // console.log("UPDATING BUTTON:")
 
     self.icon_path = (self.data.theme !== "" ? AFRAME_UIPACK.themes[self.data.theme].icon_path : AFRAME_UIPACK.UIPACK_CONSTANTS.icon_path) + "/" + self.data.icon_name;
 

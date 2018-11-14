@@ -24,7 +24,7 @@ AFRAME.registerComponent('immersive-video', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
-        console.log("INIT IMMERSIVE VIDEO");
+        // console.log("INIT IMMERSIVE VIDEO");
 
         var self = this;
 
@@ -42,7 +42,7 @@ AFRAME.registerComponent('immersive-video', {
 
         if (self.data.type.includes('vertical')) self.video_type.split = 'vertical';
 
-        console.log("VIDEO TYPE", self.video_type, self.data.type);
+        // console.log("VIDEO TYPE", self.video_type, self.data.type);
 
 
         // ACTIVATE layer 1 (left eye) for camera on monoscopic view
@@ -73,7 +73,7 @@ AFRAME.registerComponent('immersive-video', {
 
         var self = this;
 
-        console.log("EN EL VIDEO UPDATE");
+        // console.log("EN EL VIDEO UPDATE");
 
         // Create if scene has not 'a-assets'
 
@@ -110,7 +110,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 // Emit event for attaching to a menu or player from the outside
 
-                console.log("EMITTING ASSET");
+                // console.log("EMITTING ASSET");
                 self.el.emit("asset_added", {'id': self.video_id}, false);
 
                 self.stereo_left_sphere = document.createElement("a-entity");
@@ -156,7 +156,7 @@ AFRAME.registerComponent('immersive-video', {
             }
             else {
 
-                console.log("MONO VIDEO");
+                // console.log("MONO VIDEO");
 
                 self.video_id = "mono_video" + "_" + self.video_timestamp;
 
@@ -185,7 +185,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.mono_sphere.setAttribute("material", {shader: "flat", src: "#" + self.video_id, side: "back"});
                 self.mono_sphere.setAttribute("scale", "-1 1 1");
 
-                console.log(self.mono_sphere.object3D);
+                // console.log(self.mono_sphere.object3D);
 
 
                 self.mono_sphere.addEventListener("materialvideoloadeddata", function(){
