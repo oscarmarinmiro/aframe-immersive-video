@@ -63,6 +63,34 @@ AFRAME.registerComponent('immersive-video', {
 
   },
 
+  insert_bottom_menu: function(){
+
+        var self = this;
+
+        // Add menu
+
+        self.menu = document.createElement("a-entity");
+
+        var icons =  {'icons': [], 'names': []};
+
+
+        if(self.video_id) {
+
+            self.menu.setAttribute("uipack-menu", {
+
+                theme: self.data.theme,
+
+                icons: icons.icons, buttons: [], media_id: self.video_id, open: false
+
+            });
+
+        }
+
+        self.el.sceneEl.appendChild(self.menu);
+
+
+  },
+
   /**
    * Called when component is attached and when component data changes.
    * Generally modifies the entity based on the data.
@@ -90,7 +118,7 @@ AFRAME.registerComponent('immersive-video', {
 
             if (self.video_type.stereo) {
 
-                var video_id = "stereo_video" + "_" + self.video_timestamp;
+                self.video_id = "stereo_video" + "_" + self.video_timestamp;
 
                 var scene = document.getElementsByTagName("a-scene")[0];
                 var assets = document.getElementsByTagName("a-assets")[0];
@@ -98,7 +126,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.video = document.createElement("video");
 
                 self.video.setAttribute("src", self.data.source);
-                self.video.setAttribute("id", video_id);
+                self.video.setAttribute("id", self.video_id);
                 self.video.setAttribute("loop", false);
                 self.video.setAttribute("autoplay", "true");
                 self.video.setAttribute("crossorigin", "anonymous");
@@ -112,7 +140,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.stereo_left_sphere = document.createElement("a-entity");
                 self.stereo_left_sphere.setAttribute("class", "videospheres");
                 self.stereo_left_sphere.setAttribute("geometry", "primitive:sphere; radius:100; segmentsWidth: 64; segmentsHeight:64");
-                self.stereo_left_sphere.setAttribute("material", {shader: "flat", src: "#" + video_id, side: "back"});
+                self.stereo_left_sphere.setAttribute("material", {shader: "flat", src: "#" + self.video_id, side: "back"});
                 self.stereo_left_sphere.setAttribute("scale", "-1 1 1");
 
                 // Sync rotation with 'camera landing rotation'
@@ -128,7 +156,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.stereo_right_sphere.setAttribute("class", "videospheres");
 
                 self.stereo_right_sphere.setAttribute("geometry", "primitive:sphere; radius:100; segmentsWidth: 64; segmentsHeight:64");
-                self.stereo_right_sphere.setAttribute("material", {shader: "flat", src: "#" + video_id, side: "back"});
+                self.stereo_right_sphere.setAttribute("material", {shader: "flat", src: "#" + self.video_id, side: "back"});
                 self.stereo_right_sphere.setAttribute("scale", "-1 1 1");
 
 
@@ -145,19 +173,8 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.el.appendChild(self.stereo_right_sphere);
 
-                // And now, attach media controls
+                self.insert_bottom_menu();
 
-                self.media_controls = document.createElement("a-entity");
-
-                self.media_controls.setAttribute("uipack-mediacontrols", {'src': "#" + video_id,
-                    width: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_width,
-                    height: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_height,
-                    theme: self.data.theme,
-                    button_radius: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_button_radius});
-
-                self.media_controls.setAttribute("position", "0 " + AFRAME_UIPACK.UIPACK_CONSTANTS.offset_player + " 0");
-
-                self.el.appendChild(self.media_controls);
 
 
             }
@@ -165,7 +182,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 console.log("MONO VIDEO");
 
-                var video_id = "mono_video" + "_" + self.video_timestamp;
+                self.video_id = "mono_video" + "_" + self.video_timestamp;
 
                 var scene = document.getElementsByTagName("a-scene")[0];
                 var assets = document.getElementsByTagName("a-assets")[0];
@@ -173,7 +190,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.video = document.createElement("video");
 
                 self.video.setAttribute("src", self.data.source);
-                self.video.setAttribute("id", video_id);
+                self.video.setAttribute("id", self.video_id);
                 self.video.setAttribute("loop", false);
                 self.video.setAttribute("autoplay", "true");
                 self.video.setAttribute("crossorigin", "anonymous");
@@ -185,7 +202,7 @@ AFRAME.registerComponent('immersive-video', {
                 self.mono_sphere.setAttribute("class", "videospheres");
 
                 self.mono_sphere.setAttribute("geometry", "primitive:sphere; radius:100; segmentsWidth: 64; segmentsHeight:64");
-                self.mono_sphere.setAttribute("material", {shader: "flat", src: "#" + video_id, side: "back"});
+                self.mono_sphere.setAttribute("material", {shader: "flat", src: "#" + self.video_id, side: "back"});
                 self.mono_sphere.setAttribute("scale", "-1 1 1");
 
                 console.log(self.mono_sphere.object3D);
@@ -201,6 +218,8 @@ AFRAME.registerComponent('immersive-video', {
                 self.video.play();
 
                 self.el.appendChild(self.mono_sphere);
+
+                self.insert_bottom_menu();
 
             }
 

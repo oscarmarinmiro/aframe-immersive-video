@@ -1,5 +1,415 @@
 
 
+AFRAME.registerComponent('uipack-menu', {
+    schema: {
+        icons: {type: 'array'},
+        theme: {type: 'string', default: "dark"},
+        buttons: {type: 'array', default: []},
+        media_id: {type: 'string', default: ""},
+        pitch: { type: 'number', default: -70},
+        pitch_max: { type: 'number', default: -50},
+        pitch_min: { type: 'number', default: -80},
+        open: {type: 'boolean', default: false}
+
+    },
+
+    set_cursor: function(){
+
+        var self = this;
+
+        console.log("HEADSET", AFRAME.utils.checkHeadsetConnected(), AFRAME.utils.isMobile(), AFRAME.utils.isGearVR(), navigator.userAgent);
+
+        var mobile = AFRAME.utils.isMobile();
+        var headset = AFRAME.utils.checkHeadsetConnected();
+
+        var desktop = !(mobile) && !(headset);
+
+        self.cursor = document.createElement("a-entity");
+
+        self.camera.appendChild(self.cursor);
+
+        self.cursor.setAttribute("id", "cursor");
+
+        self.cursor.setAttribute("cursor", {rayOrigin: desktop ? "mouse": "entity", fuse: true, fuseTimeout: DATAVERSE.animation.button});
+        self.cursor.setAttribute("position", {x:0,y:0,z:-1});
+        self.cursor.setAttribute("geometry", {primitive: "ring", radiusInner: 0.01, radiusOuter: 0.02});
+        self.cursor.setAttribute("material", {color: self.theme_data.cursor_color, shader: "flat"});
+        self.cursor.setAttribute("visible", !desktop);
+
+        // Oculus Go or GearVR;
+
+        if(AFRAME.utils.isMobile() && AFRAME.utils.isGearVR()){
+            headset = true;
+            mobile = false;
+        }
+
+        // To avoid clicks while loading and intro panel is present
+
+        self.cursor.setAttribute("raycaster", {near: 0.0, objects: ".non_click_while_loading"});
+
+        if((headset) && (!(mobile))){
+
+            console.log("INSERTING LASER CONTROLS");
+
+            self.laser_controls = document.createElement("a-entity");
+
+            self.laser_controls.setAttribute("laser-controls", {});
+
+            self.laser_controls.classList.add("dataverse-added");
+
+            self.laser_controls.setAttribute("line", {color: self.theme_data.cursor_color});
+
+            self.laser_controls.setAttribute("raycaster", {near: 0.0, objects: ".non_click_while_loading"});
+
+            // Hide and deactivate gaze cursor
+
+            self.cursor.setAttribute("visible", false);
+
+            self.cursor.setAttribute("raycaster", {far:0.0});
+
+            self.scene.appendChild(self.laser_controls);
+
+        }
+
+
+        DATAVERSE.cursor_mode = desktop ? "desktop" : (mobile ? "gaze": "laser");
+
+    },
+
+    init: function () {
+
+    var self = this;
+
+    // Annotate pointer to camera on scene 'mounted' or on the fly it camera exists
+
+    if(!('camera' in self.el.sceneEl)) {
+
+        self.el.sceneEl.addEventListener("renderstart", function (e) {
+            self.camera = self.el.sceneEl.camera;
+        });
+    }
+    else {
+        self.camera = self.el.sceneEl.camera;
+    }
+
+    // Class the element
+
+    self.el.classList.add("uipack");
+    self.el.classList.add("uipack-menu");
+
+    self.container = document.createElement("a-entity");
+
+    self.el.appendChild(self.container);
+
+    // Opening / (closing?) icon
+
+    self.open_icon = document.createElement("a-entity");
+
+    self.open_icon.classList.add("non_click_while_loading");
+
+    self.open_icon.setAttribute("uipack-button", {icon_name: "bars.png", theme: self.data.theme});
+
+    self.container.appendChild(self.open_icon);
+
+    // For keeping track of frame count in .tick()
+
+    self.frame_count = 0;
+
+    // Keep track of the whole component visibility based on user head pitch
+
+    self.hidden = true;
+
+    self.el.setAttribute("visible", !self.hidden);
+
+    // Keeping track of whether the menu is open or not, to modify yaw or not
+
+    self.open_menu = false;
+
+    self.menu_group = document.createElement("a-entity");
+
+    // Hide menu group at start (closed menu)
+
+    self.menu_group.setAttribute("visible", false);
+
+    self.container.appendChild(self.menu_group);
+
+    // Arrays to store icon + button references
+
+    self.icon_row = [];
+
+    self.button_row = [];
+
+    // Create icon row
+
+    for(var i=0; i < self.data.icons.length; i++){
+
+        var my_icon = document.createElement("a-entity");
+
+        my_icon.icon_index = i;
+
+        my_icon.classList.add("non_click_while_loading");
+
+        my_icon.addEventListener("clicked", function(){
+            if(self.open_menu && (!self.hidden)) {
+                self.el.emit("clicked", {'type': "icon", "index": this.icon_index}, false);
+            }
+        });
+
+        self.icon_row.push(my_icon);
+
+        self.menu_group.appendChild(my_icon);
+    }
+
+    // Create button row
+
+    // First create button parent to control centering
+
+    self.button_parent = document.createElement("a-entity");
+
+    self.menu_group.appendChild(self.button_parent);
+
+    for(i=0; i < self.data.buttons.length; i++){
+
+        var my_button = document.createElement("a-entity");
+
+        my_button.button_index = i;
+
+        my_button.addEventListener("clicked", function(){
+            if(self.open_menu && (!self.hidden)) {
+
+                self.el.emit("clicked", {'type': "button", "index": this.button_index}, false);
+            }
+        });
+
+        self.button_row.push(my_button);
+
+        self.button_parent.appendChild(my_button);
+    }
+
+    // Create player (if needed)
+
+    if(self.data.media_id != ""){
+        // LATER. Special version of video-controls?
+
+        self.media_controls = document.createElement("a-entity");
+        self.menu_group.appendChild(self.media_controls);
+    }
+
+    // Open/Close menu event
+
+    self.open_icon.addEventListener("clicked", function(){
+
+        // Close menu
+
+        if(self.open_menu){
+
+            // View the open icon and hide menu
+            self.menu_group.setAttribute("visible", false);
+
+            // Close icon should be now a menu icon
+
+            self.open_icon.setAttribute("uipack-button", "icon_name", "bars.png");
+
+            // Mark menu as closed
+
+            self.open_menu = false;
+        }
+
+        // Open menu
+
+        else {
+
+            // Make visible the group
+
+            self.menu_group.setAttribute("visible", true);
+
+            // Open icon should be now a 'close'
+
+            self.open_icon.setAttribute("uipack-button", "icon_name", "close.png");
+
+            // Mark menu as open
+
+            self.open_menu = true;
+        }
+
+    });
+
+  },
+  remove: function(){
+
+  },
+
+  update: function (oldData) {
+
+    var self = this;
+
+    // Position icons
+
+    var icon_row_half_width = ((self.icon_row.length-1)*(AFRAME_UIPACK.UIPACK_CONSTANTS.button_radius*2) + (self.icon_row.length - 1) * AFRAME_UIPACK.UIPACK_CONSTANTS.icon_spacing)/2.0;
+
+    for(var i=0; i< self.icon_row.length; i++){
+
+      self.icon_row[i].setAttribute("uipack-button", {icon_name: self.data.icons[i]});
+
+      self.icon_row[i].setAttribute("position", (i*(AFRAME_UIPACK.UIPACK_CONSTANTS.button_radius*2 +AFRAME_UIPACK.UIPACK_CONSTANTS.icon_spacing )) - icon_row_half_width + " " +  AFRAME_UIPACK.UIPACK_CONSTANTS.offset_icons +" 0");
+    }
+
+    // Position text buttons
+
+    // button_parent
+
+    var button_row_half_width = ((self.button_row.length-1)*(AFRAME_UIPACK.UIPACK_CONSTANTS.menu_button_width) + (self.button_row.length - 1) * AFRAME_UIPACK.UIPACK_CONSTANTS.button_spacing)/2.0;
+
+    for(i=0; i< self.button_row.length; i++){
+
+      self.button_row[i].setAttribute("uipack-textbutton", {text: self.data.buttons[i], width: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_button_width, color: "#FFF", background: "#000"});
+
+      self.button_row[i].setAttribute("position", (i*(AFRAME_UIPACK.UIPACK_CONSTANTS.menu_button_width + AFRAME_UIPACK.UIPACK_CONSTANTS.button_spacing )) - button_row_half_width + " " +  AFRAME_UIPACK.UIPACK_CONSTANTS.offset_buttons +" 0");
+    }
+
+
+    // Position video control if exists
+
+    if(self.data.media_id != "") {
+
+        self.media_controls.setAttribute("uipack-mediacontrols", {'src': "#" + self.data.media_id,
+            width: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_width,
+            height: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_height,
+            theme: self.data.theme,
+            button_radius: AFRAME_UIPACK.UIPACK_CONSTANTS.menu_player_button_radius});
+
+        self.media_controls.setAttribute("position", "0 " + AFRAME_UIPACK.UIPACK_CONSTANTS.offset_player + " 0");
+    }
+
+    // If data.open, emulate open menu
+
+    if(self.data.open) {
+
+            // Make visible the group
+
+            self.menu_group.setAttribute("visible", true);
+
+            // Open icon should be now a 'close'
+
+            self.open_icon.setAttribute("uipack-button", "icon_name", "close.png");
+
+            // Mark menu as open
+
+            self.open_menu = true;
+
+            self.hidden = false;
+
+    }
+
+
+  },
+
+  tick: function (t) {
+
+      var self = this;
+
+      self.frame_count++;
+
+      if(self.frame_count % AFRAME_UIPACK.UIPACK_CONSTANTS.menu_tick_check === 0){
+
+        // Get camera pitch and yaw
+
+        var camera_rotation = this.el.sceneEl.camera.el.getAttribute("rotation");
+
+        var camera_yaw = camera_rotation.y + 90;
+
+        var camera_pitch = camera_rotation.x;
+
+        // If pitch in configured range, show menu, else hide (only id menu is closed)
+
+        if(camera_pitch <  self.data.pitch_max && camera_pitch > self.data.pitch_min){
+
+                self.hidden = false;
+        }
+        else {
+
+            if(!(self.open_menu)) {
+
+                self.hidden = true;
+            }
+        }
+
+        self.el.setAttribute("visible", !self.hidden);
+
+        // Emulate 'look into menu' if open on init
+
+        if(self.data.open) {
+
+            self.y_position = AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.sin(this.data.pitch * Math.PI / 180.0);
+            self.x_position = AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.cos(this.data.pitch * Math.PI / 180.0) * Math.cos(camera_yaw * Math.PI / 180.0);
+            self.z_position = -AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.cos(this.data.pitch * Math.PI / 180.0) * Math.sin(camera_yaw * Math.PI / 180.0);
+
+            this.container.setAttribute("position", [self.x_position, self.y_position, self.z_position].join(" "));
+
+            if (self.camera) {
+
+                var cam_position = self.camera.el.getAttribute("position");
+
+                self.el.setAttribute("position", {x: cam_position.x, y: cam_position.y, z: cam_position.z});
+
+                self.container.setAttribute("rotation", {x: this.data.pitch, y: camera_rotation.y, z: 0});
+
+                self.data.open = false;
+
+            }
+        }
+
+
+        // If menu closed but visible: synch rotation and position with camera
+
+        if(!(self.open_menu) && !(self.hidden)) {
+
+            // Set position of menu based on camera yaw and data.pitch
+
+            self.y_position = AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.sin(this.data.pitch * Math.PI / 180.0);
+            self.x_position = AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.cos(this.data.pitch * Math.PI / 180.0) * Math.cos(camera_yaw * Math.PI / 180.0);
+            self.z_position = -AFRAME_UIPACK.UIPACK_CONSTANTS.menu_distance * Math.cos(this.data.pitch * Math.PI / 180.0) * Math.sin(camera_yaw * Math.PI / 180.0);
+
+            this.container.setAttribute("position", [self.x_position, self.y_position, self.z_position].join(" "));
+
+            // And again, face camera and pos
+
+            if(self.camera) {
+
+                var cam_position = self.camera.el.getAttribute("position");
+
+                self.el.setAttribute("position",{x: cam_position.x, y: cam_position.y, z: cam_position.z});
+                self.container.setAttribute("rotation",{x: camera_rotation.x, y: camera_rotation.y, z: 0});
+
+            }
+
+
+        }
+        else {
+
+            // If menu open, just synch camera position
+
+            if(self.open_menu && (!self.hidden)){
+
+                if(self.camera) {
+
+                    var cam_position = self.camera.el.getAttribute("position");
+
+                    self.el.setAttribute("position",{x: cam_position.x, y: cam_position.y, z: cam_position.z});
+
+                }
+
+
+            }
+        }
+
+      }
+
+  }
+});
+
+
+
 AFRAME.registerComponent('uipack-button', {
     schema: {
         icon_name: {type: 'string'},
@@ -12,10 +422,10 @@ AFRAME.registerComponent('uipack-button', {
         theme: {type: 'string', default: ""}
     },
 
+
   init: function () {
 
     var self = this;
-
 
     self.button_mode = (AFRAME_UIPACK && ('cursor_mode' in AFRAME_UIPACK)) ? AFRAME_UIPACK.cursor_mode : "desktop";
 
@@ -137,6 +547,8 @@ AFRAME.registerComponent('uipack-button', {
     var self = this;
 
     // CHange material, radius, position and rotation
+
+    console.log("UPDATING BUTTON:")
 
     self.icon_path = (self.data.theme !== "" ? AFRAME_UIPACK.themes[self.data.theme].icon_path : AFRAME_UIPACK.UIPACK_CONSTANTS.icon_path) + "/" + self.data.icon_name;
 
