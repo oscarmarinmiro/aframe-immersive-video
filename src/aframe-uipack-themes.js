@@ -2,7 +2,7 @@ var AFRAME_UIPACK = AFRAME_UIPACK || {};
 
 AFRAME_UIPACK.themes =
 {
-    'dark': {
+    'light': {
         'default_color': '#CCCCCC',
         'cursor_color': '#F91100',
         'arc_color': '#F91100',
@@ -21,7 +21,7 @@ AFRAME_UIPACK.themes =
         'player_text_color': "black",
         'player_font': '25px Roboto'
     },
-    'light': {
+    'dark': {
         'default_color': '#333333',
         'cursor_color': '#F91100',
         'arc_color': '#F91100',

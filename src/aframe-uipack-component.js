@@ -7,72 +7,9 @@ AFRAME.registerComponent('uipack-menu', {
         buttons: {type: 'array', default: []},
         media_id: {type: 'string', default: ""},
         pitch: { type: 'number', default: -70},
-        pitch_max: { type: 'number', default: -50},
+        pitch_max: { type: 'number', default: -40},
         pitch_min: { type: 'number', default: -80},
         open: {type: 'boolean', default: false}
-
-    },
-
-    set_cursor: function(){
-
-        var self = this;
-
-        console.log("HEADSET", AFRAME.utils.checkHeadsetConnected(), AFRAME.utils.isMobile(), AFRAME.utils.isGearVR(), navigator.userAgent);
-
-        var mobile = AFRAME.utils.isMobile();
-        var headset = AFRAME.utils.checkHeadsetConnected();
-
-        var desktop = !(mobile) && !(headset);
-
-        self.cursor = document.createElement("a-entity");
-
-        self.camera.appendChild(self.cursor);
-
-        self.cursor.setAttribute("id", "cursor");
-
-        self.cursor.setAttribute("cursor", {rayOrigin: desktop ? "mouse": "entity", fuse: true, fuseTimeout: DATAVERSE.animation.button});
-        self.cursor.setAttribute("position", {x:0,y:0,z:-1});
-        self.cursor.setAttribute("geometry", {primitive: "ring", radiusInner: 0.01, radiusOuter: 0.02});
-        self.cursor.setAttribute("material", {color: self.theme_data.cursor_color, shader: "flat"});
-        self.cursor.setAttribute("visible", !desktop);
-
-        // Oculus Go or GearVR;
-
-        if(AFRAME.utils.isMobile() && AFRAME.utils.isGearVR()){
-            headset = true;
-            mobile = false;
-        }
-
-        // To avoid clicks while loading and intro panel is present
-
-        self.cursor.setAttribute("raycaster", {near: 0.0, objects: ".non_click_while_loading"});
-
-        if((headset) && (!(mobile))){
-
-            console.log("INSERTING LASER CONTROLS");
-
-            self.laser_controls = document.createElement("a-entity");
-
-            self.laser_controls.setAttribute("laser-controls", {});
-
-            self.laser_controls.classList.add("dataverse-added");
-
-            self.laser_controls.setAttribute("line", {color: self.theme_data.cursor_color});
-
-            self.laser_controls.setAttribute("raycaster", {near: 0.0, objects: ".non_click_while_loading"});
-
-            // Hide and deactivate gaze cursor
-
-            self.cursor.setAttribute("visible", false);
-
-            self.cursor.setAttribute("raycaster", {far:0.0});
-
-            self.scene.appendChild(self.laser_controls);
-
-        }
-
-
-        DATAVERSE.cursor_mode = desktop ? "desktop" : (mobile ? "gaze": "laser");
 
     },
 

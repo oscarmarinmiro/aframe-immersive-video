@@ -63,33 +63,6 @@ AFRAME.registerComponent('immersive-video', {
 
   },
 
-  insert_bottom_menu: function(){
-
-        var self = this;
-
-        // Add menu
-
-        self.menu = document.createElement("a-entity");
-
-        var icons =  {'icons': [], 'names': []};
-
-
-        if(self.video_id) {
-
-            self.menu.setAttribute("uipack-menu", {
-
-                theme: self.data.theme,
-
-                icons: icons.icons, buttons: [], media_id: self.video_id, open: false
-
-            });
-
-        }
-
-        self.el.sceneEl.appendChild(self.menu);
-
-
-  },
 
   /**
    * Called when component is attached and when component data changes.
@@ -99,6 +72,8 @@ AFRAME.registerComponent('immersive-video', {
 
 
         var self = this;
+
+        console.log("EN EL VIDEO UPDATE");
 
         // Create if scene has not 'a-assets'
 
@@ -133,9 +108,10 @@ AFRAME.registerComponent('immersive-video', {
 
                 assets.appendChild(self.video);
 
-                // // Emit event for attaching to a menu or player from the outside
-                //
-                // self.el.emit("asset_added", {'id': video_id}, false);
+                // Emit event for attaching to a menu or player from the outside
+
+                console.log("EMITTING ASSET");
+                self.el.emit("asset_added", {'id': self.video_id}, false);
 
                 self.stereo_left_sphere = document.createElement("a-entity");
                 self.stereo_left_sphere.setAttribute("class", "videospheres");
@@ -162,7 +138,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.stereo_right_sphere.addEventListener("materialvideoloadeddata", function(){
 
-                    self.el.emit("video_loaded", null, false);
+                    self.el.emit("video_loaded", {'id': self.video_id}, false);
 
                 });
 
@@ -173,7 +149,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.el.appendChild(self.stereo_right_sphere);
 
-                self.insert_bottom_menu();
+                // self.insert_bottom_menu();
 
 
 
@@ -197,6 +173,10 @@ AFRAME.registerComponent('immersive-video', {
 
                 assets.appendChild(self.video);
 
+                // Emit event for attaching to a menu or player from the outside
+
+                self.el.emit("asset_added", {'id': self.video_id}, false);
+
                 self.mono_sphere = document.createElement("a-entity");
 
                 self.mono_sphere.setAttribute("class", "videospheres");
@@ -210,7 +190,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.mono_sphere.addEventListener("materialvideoloadeddata", function(){
 
-                    self.el.emit("video_loaded", null, false);
+                    self.el.emit("video_loaded", {'id': self.video_id}, false);
 
                 });
 
@@ -219,7 +199,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.el.appendChild(self.mono_sphere);
 
-                self.insert_bottom_menu();
+                // self.insert_bottom_menu();
 
             }
 
