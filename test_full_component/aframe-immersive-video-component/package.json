@@ -1,0 +1,62 @@
+{
+  "name": "aframe-immersive-video-component",
+  "version": "1.0.0",
+  "description": "A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including a control bar for it",
+  "main": "index.js",
+  "unpkg": "dist/aframe-immersive-video-component.min.js",
+  "scripts": {
+    "build": "gulp",
+    "dist": "npm run build",
+    "prepublish": "npm run dist",
+    "ghpages": "ghpages"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oscarmarinmiro/aframe-immersive-video.git"
+  },
+  "keywords": [
+    "aframe",
+    "aframe-component",
+    "aframe-vr",
+    "vr",
+    "webvr",
+    "360",
+    "stereo",
+    "180",
+    "video",
+    "controls",
+    "immersive-video"
+  ],
+  "author": "Oscar Marin <oscar@outliers.es>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oscarmarinmiro/aframe-immersive-video/issues"
+  },
+  "dependencies": {
+    "howler": "^2.0.15"
+  },
+  "homepage": "https://github.com/oscarmarinmiro/aframe-immersive-video#readme",
+  "devDependencies": {
+    "ghpages": "^0.0.8",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-copy": "^1.1.0",
+    "gulp-filter": "^5.1.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.3.0",
+    "gulp-uglify": "^3.0.0",
+    "shelljs": "^0.8.2",
+    "shx": "^0.3.2"
+  },
+  "semistandard": {
+    "globals": [
+      "AFRAME",
+      "THREE"
+    ],
+    "ignore": [
+      "examples/build.js",
+      "dist/**"
+    ]
+  }
+}
