@@ -1,4 +1,3 @@
-ls -l
 ## aframe-immersive-video-component
 
 [![Version](http://img.shields.io/npm/v/aframe-immersive-video-component.svg?style=flat-square)](https://npmjs.org/package/aframe-immersive-video-component)
