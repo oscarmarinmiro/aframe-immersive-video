@@ -10,9 +10,10 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('immersive-video', {
   schema: {
       source: {type: 'string', default: ""},
-//         source: {type: 'string', default: ""},
-      theme: {'type': 'string', default: "dark"},
       type: {type: 'string', default: "360"},
+      theme: {'type': 'string', default: "dark"},
+      controls: {type: 'boolean', default: true},
+      open: {type: 'boolean', default: true}
   },
 
   /**
@@ -42,14 +43,12 @@ AFRAME.registerComponent('immersive-video', {
 
         if (self.data.type.includes('vertical')) self.video_type.split = 'vertical';
 
-        // console.log("VIDEO TYPE", self.video_type, self.data.type);
-
 
         // ACTIVATE layer 1 (left eye) for camera on monoscopic view
 
         if(self.video_type.stereo) {
 
-            // Camera is not existent at this point. If wait for scene "loaded", still is undefined.
+            // Camera is non existent at this point. If wait for scene "loaded", still is undefined.
             // So, should wait for scene 'renderstart', set a flag and fire component 'update'
 
             self.el.sceneEl.addEventListener("renderstart", function () {
@@ -60,6 +59,14 @@ AFRAME.registerComponent('immersive-video', {
 
             });
         }
+
+        // If controls: call UIPACK Utils
+
+        if(self.data.controls){
+            AFRAME_UIPACK.utils.insert_immersive_video_menu({el: self.el, theme: self.data.theme, open: self.data.open});
+        }
+
+
 
   },
 

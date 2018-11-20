@@ -2,6 +2,10 @@ var AFRAME_UIPACK = AFRAME_UIPACK || {};
 
 AFRAME_UIPACK.utils = {
 
+    // Insert a 'controls' menu for a video with 'theme' and 'open' params that 'act' on 'el' DOM element (a video component)
+
+    // Also, sets cursor based on desktop, mobile or headset
+
     insert_immersive_video_menu: function(options) {
 
         var options = options || {};
@@ -10,11 +14,11 @@ AFRAME_UIPACK.utils = {
 
         var open = ('open' in options) ? options.open : true;
 
-        var id = options.id || "immersive-video";
+        var el = options.el;
 
-        function insert_cursor_and_menu(scene, component_id, theme, open) {
+        function insert_cursor_and_menu(scene, element, theme, open) {
 
-            var video_id = document.getElementById(component_id).components["immersive-video"].video_id;
+            var video_id = element.components["immersive-video"].video_id;
 
             AFRAME_UIPACK.utils.set_cursor(scene);
 
@@ -36,11 +40,11 @@ AFRAME_UIPACK.utils = {
         var scene = document.querySelector("a-scene");
 
         if (scene.renderStarted) {
-            insert_cursor_and_menu(scene, id, theme, open);
+            insert_cursor_and_menu(scene, el, theme, open);
         }
         else {
             scene.addEventListener("renderstart", function () {
-                insert_cursor_and_menu(scene, id, theme, open);
+                insert_cursor_and_menu(scene, el, theme, open);
             });
         }
     },
