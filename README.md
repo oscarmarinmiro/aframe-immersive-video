@@ -5,6 +5,7 @@
 
 A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including a control bar for it
 
+See [example here] (https://oscarmarinmiro.github.io/aframe-immersive-video/)
 For [A-Frame](https://aframe.io).
 
 
