@@ -8,7 +8,7 @@ A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including
 For [A-Frame](https://aframe.io).
 
 
-![Demo Gif](img/capture.gif)
+<img src="img/capture.gif" alt="example" width="800">
 
 ### API
 
