@@ -3,7 +3,9 @@
 [![Version](http://img.shields.io/npm/v/aframe-immersive-video-component.svg?style=flat-square)](https://npmjs.org/package/aframe-immersive-video-component)
 [![License](http://img.shields.io/npm/l/aframe-immersive-video-component.svg?style=flat-square)](https://npmjs.org/package/aframe-immersive-video-component)
 
-A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including a control bar for it. You can choose a 'theme' for the bar. Also, the component will detect de headset and do the following: On Desktop, you can point and click the UI with the mouse. On Mobile, a gaze-based interaction will be used. On Oculus Go and GearVR, the controller will be used as a laser. On HTC Vive and Oculus you'll also have a 'laser control'
+A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including a control bar for it. You can choose a 'theme' for the bar.
+ 
+Also, the component will detect the headset and do the following: On Desktop, you can point and click the UI with the mouse. On Mobile, a gaze-based interaction will be used. On Oculus Go and GearVR, the controller will be used as a laser. On HTC Vive and Oculus you'll also have a 'laser control'
 
 See [example here](https://oscarmarinmiro.github.io/aframe-immersive-video/)
 
