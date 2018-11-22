@@ -41,7 +41,7 @@ Install and use by directly including the [browser files](dist):
 <body>
     <a-scene antialias="true">
       <!--360 stereo LR-->
-      <a-entity id="immersive-video" immersive-video="type: 360_stereo; source:https://cdn.dataverse.xyz/examples/allvizs/immersive/MaryOculus.mp4"></a-entity>
+      <a-entity immersive-video="type: 360_stereo; source:https://cdn.dataverse.xyz/examples/allvizs/immersive/MaryOculus.mp4"></a-entity>
 
     </a-scene>
 
