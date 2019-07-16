@@ -130,7 +130,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.stereo_left_sphere.setAttribute("rotation", {x:0, y: self.el.getAttribute("rotation").y, z:0});
 
-                AFRAME.utils.entity.setComponentProperty(self.stereo_left_sphere, "stereo", {'eye': 'left', 'mode': self.video_type.mode, 'split': self.video_type.split});
+                AFRAME.utils.entity.setComponentProperty(self.stereo_left_sphere, "stereo", {'eye': 'left', 'mode': self.video_type.coverage, 'split': self.video_type.split});
 
                 self.el.appendChild(self.stereo_left_sphere);
 
@@ -150,7 +150,7 @@ AFRAME.registerComponent('immersive-video', {
                 });
 
 
-                AFRAME.utils.entity.setComponentProperty(self.stereo_right_sphere, "stereo", {'eye': 'right', 'mode': self.video_type.mode, 'split': self.video_type.split});
+                AFRAME.utils.entity.setComponentProperty(self.stereo_right_sphere, "stereo", {'eye': 'right', 'mode': self.video_type.coverage, 'split': self.video_type.split});
 
                 self.video.play();
 
