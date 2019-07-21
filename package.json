@@ -1,6 +1,6 @@
 {
   "name": "aframe-immersive-video-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A one-liner component for viewing Stereo/Mono 360/180 videos in WebVR, including a control bar for it",
   "main": "index.js",
   "unpkg": "dist/aframe-immersive-video-component.min.js",
