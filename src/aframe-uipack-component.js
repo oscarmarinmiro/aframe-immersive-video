@@ -787,14 +787,20 @@ AFRAME.registerComponent('uipack-mediacontrols', {
 
                 // Get raycast intersection point, and from there, x_offset in bar
 
+                var point;
+
 
                 if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
 
-                    var point = event.detail.getIntersection(my_bar).point
+                    // console.log("EVENT DETAIL", event.detail);
+
+                    point = event.detail.getIntersection(my_bar).point;
+
+                    // console.log("EL POINT ES ", point);
                 }
                 else {
 
-                    var point = event.detail.intersection.point;
+                    point = event.detail.intersection.point;
                 }
 
 
