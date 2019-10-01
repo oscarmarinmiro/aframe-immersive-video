@@ -134,7 +134,7 @@ AFRAME.registerComponent('immersive-video', {
 
                 self.stereo_left_sphere.setAttribute("rotation", {x:0, y: self.el.getAttribute("rotation").y, z:0});
 
-                AFRAME.utils.entity.setComponentProperty(self.stereo_left_sphere, "stereo", {'eye': 'left', 'mode': self.video_type.mode, 'split': self.video_type.split});
+                AFRAME.utils.entity.setComponentProperty(self.stereo_left_sphere, "stereo", {'eye': 'left', 'mode': self.video_type.coverage, 'split': self.video_type.split});
 
                 self.el.appendChild(self.stereo_left_sphere);
 
@@ -154,7 +154,7 @@ AFRAME.registerComponent('immersive-video', {
                 });
 
 
-                AFRAME.utils.entity.setComponentProperty(self.stereo_right_sphere, "stereo", {'eye': 'right', 'mode': self.video_type.mode, 'split': self.video_type.split});
+                AFRAME.utils.entity.setComponentProperty(self.stereo_right_sphere, "stereo", {'eye': 'right', 'mode': self.video_type.coverage, 'split': self.video_type.split});
 
                 self.video.play();
 
@@ -850,6 +850,8 @@ AFRAME.registerComponent('uipack-button', {
 
     this.el.classList.add("uipack", "uipack-button", "clickable");
 
+    self.button.classList.add("clickable");
+
 
     if(self.button_mode === "desktop") {
 
@@ -900,37 +902,74 @@ AFRAME.registerComponent('uipack-button', {
 
                 // Create animation
 
-                self.animation = document.createElement("a-animation");
-                self.animation.setAttribute("easing", "linear");
-                self.animation.setAttribute("attribute", "geometry.thetaLength");
-                self.animation.setAttribute("dur", AFRAME_UIPACK.animation.button);
-                self.animation.setAttribute("from", "0");
-                self.animation.setAttribute("to", "360");
+                // Specific code for AFrame 0.9.x and up
 
-                self.ring.appendChild(self.animation);
+                // if (AFRAME_UIPACK.utils.version_greater_than_nine()){
 
-                self.el.appendChild(self.ring);
+                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
 
-                self.first_hover = false;
+                    self.ring.setAttribute("animation", {
+                        easing: "linear",
+                        property: "geometry.thetaLength",
+                        dur: AFRAME_UIPACK.animation.button,
+                        from: 0,
+                        to: 360
+                    });
 
-                // Emit 'clicked' on ring animation end
+                    self.el.appendChild(self.ring);
 
-                self.animation.addEventListener("animationend", function () {
+                    self.first_hover = false;
 
-                    setTimeout(function () {
-                        self.first_hover = true;
-                    }, 500);
+                    self.ring.addEventListener("animationcomplete", function() {
 
-                    var sound = new Howl({src: AFRAME_UIPACK.paths.click_sound, volume: 0.25});
+                        setTimeout(function () {
+                            self.first_hover = true;
+                        }, 500);
 
-                    sound.play();
+                        var sound = new Howl({src: AFRAME_UIPACK.paths.click_sound, volume: 0.25});
 
-                    self.el.emit("clicked", null, false);
+                        sound.play();
 
-                    self.ring.parentNode.removeChild(self.ring);
+                        self.el.emit("clicked", null, false);
+
+                        self.ring.parentNode.removeChild(self.ring);
 
 
-                });
+                    });
+                }
+                else {
+                    self.animation = document.createElement("a-animation");
+                    self.animation.setAttribute("easing", "linear");
+                    self.animation.setAttribute("attribute", "geometry.thetaLength");
+                    self.animation.setAttribute("dur", AFRAME_UIPACK.animation.button);
+                    self.animation.setAttribute("from", "0");
+                    self.animation.setAttribute("to", "360");
+
+                    self.ring.appendChild(self.animation);
+
+                    self.el.appendChild(self.ring);
+
+                    self.first_hover = false;
+
+                    // Emit 'clicked' on ring animation end
+
+                    self.animation.addEventListener("animationend", function () {
+
+                        setTimeout(function () {
+                            self.first_hover = true;
+                        }, 500);
+
+                        var sound = new Howl({src: AFRAME_UIPACK.paths.click_sound, volume: 0.25});
+
+                        sound.play();
+
+                        self.el.emit("clicked", null, false);
+
+                        self.ring.parentNode.removeChild(self.ring);
+
+
+                    });
+                }
             }
         });
 
@@ -1161,7 +1200,14 @@ AFRAME.registerComponent('uipack-mediacontrols', {
 
             // Get raycast intersection point, and from there, x_offset in bar
 
+            // if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
+            //
+            //     var point = event.detail.getIntersection(this.bar).point
+            // }
+            // else {
+
             var point = event.detail.intersection.point;
+            // }
 
             var x_offset = this.object3D.worldToLocal(point).x;
 
@@ -1204,6 +1250,8 @@ AFRAME.registerComponent('uipack-mediacontrols', {
 
         self.first_hover = true;
 
+        var my_bar = this.bar;
+
         this.bar.addEventListener('raycaster-intersected', function (event) {
 
             if (self.first_hover) {
@@ -1213,7 +1261,22 @@ AFRAME.registerComponent('uipack-mediacontrols', {
 
                 // Get raycast intersection point, and from there, x_offset in bar
 
-                var point = event.detail.intersection.point;
+                var point;
+
+
+                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
+
+                    // console.log("EVENT DETAIL", event.detail);
+
+                    point = event.detail.getIntersection(my_bar).point;
+
+                    // console.log("EL POINT ES ", point);
+                }
+                else {
+
+                    point = event.detail.intersection.point;
+                }
+
 
                 var x_offset = this.object3D.worldToLocal(point).x;
 
