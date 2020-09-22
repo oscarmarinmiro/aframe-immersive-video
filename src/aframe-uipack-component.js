@@ -432,7 +432,7 @@ AFRAME.registerComponent('uipack-button', {
 
                 // if (AFRAME_UIPACK.utils.version_greater_than_nine()){
 
-                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
+                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) >= 1)){
 
                     self.ring.setAttribute("animation", {
                         easing: "linear",
@@ -726,7 +726,7 @@ AFRAME.registerComponent('uipack-mediacontrols', {
 
             // Get raycast intersection point, and from there, x_offset in bar
 
-            // if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
+            // if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) >= 1)){
             //
             //     var point = event.detail.getIntersection(this.bar).point
             // }
@@ -790,7 +790,7 @@ AFRAME.registerComponent('uipack-mediacontrols', {
                 var point;
 
 
-                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) > 1)){
+                if((AFRAME.version.startsWith("0.9.")) || (parseInt(AFRAME.version.split(".")[0]) >= 1)){
 
                     // console.log("EVENT DETAIL", event.detail);
 
