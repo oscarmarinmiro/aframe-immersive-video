@@ -9,13 +9,15 @@ AFRAME.registerComponent('uipack-menu', {
         pitch: { type: 'number', default: -70},
         pitch_max: { type: 'number', default: -40},
         pitch_min: { type: 'number', default: -80},
-        open: {type: 'boolean', default: false}
-
+        open: {type: 'boolean', default: false},
+        // hide the controls on touch
+        touch_hide_ui: { type: 'boolean', default: false }
     },
 
     init: function () {
 
     var self = this;
+    self.data.open ||= touch_hide_ui;
 
     // Annotate pointer to camera on scene 'mounted' or on the fly it camera exists
 
@@ -67,6 +69,9 @@ AFRAME.registerComponent('uipack-menu', {
     // Hide menu group at start (closed menu)
 
     self.menu_group.setAttribute("visible", false);
+
+    // track whether the user has touched to hide the menus
+    self.touch_hidden = false;
 
     self.container.appendChild(self.menu_group);
 
@@ -132,44 +137,47 @@ AFRAME.registerComponent('uipack-menu', {
         self.menu_group.appendChild(self.media_controls);
     }
 
-    // Open/Close menu event
+    if (self.data.touch_hide_ui) {
+        // open_icon is not used for touch-hide mode
+        self.open_icon.setAttribute("visible", false);
+    } else {
+        // Open/Close menu event
+        self.open_icon.addEventListener("clicked", function(){
 
-    self.open_icon.addEventListener("clicked", function(){
+            // Close menu
 
-        // Close menu
+            if(self.open_menu){
 
-        if(self.open_menu){
+                // View the open icon and hide menu
+                self.menu_group.setAttribute("visible", false);
 
-            // View the open icon and hide menu
-            self.menu_group.setAttribute("visible", false);
+                // Close icon should be now a menu icon
 
-            // Close icon should be now a menu icon
+                self.open_icon.setAttribute("uipack-button", "icon_name", "bars.png");
 
-            self.open_icon.setAttribute("uipack-button", "icon_name", "bars.png");
+                // Mark menu as closed
 
-            // Mark menu as closed
+                self.open_menu = false;
+            }
 
-            self.open_menu = false;
-        }
+            // Open menu
 
-        // Open menu
+            else {
 
-        else {
+                // Make visible the group
 
-            // Make visible the group
+                self.menu_group.setAttribute("visible", true);
 
-            self.menu_group.setAttribute("visible", true);
+                // Open icon should be now a 'close'
 
-            // Open icon should be now a 'close'
+                self.open_icon.setAttribute("uipack-button", "icon_name", "close.png");
 
-            self.open_icon.setAttribute("uipack-button", "icon_name", "close.png");
+                // Mark menu as open
 
-            // Mark menu as open
-
-            self.open_menu = true;
-        }
-
-    });
+                self.open_menu = true;
+            }
+        });
+    }
 
   },
   remove: function(){
@@ -671,7 +679,13 @@ AFRAME.registerComponent('uipack-mediacontrols', {
         }
 
     });
+    self.icon.addEventListener("mouseenter", function() {
+        self.cursor_over_icon = true;
+    });
 
+    self.icon.addEventListener("mouseleave", function() {
+        self.cursor_over_icon = false;
+    });
 
     window.addEventListener('keypress', function(event) {
       switch (event.keyCode) {
@@ -755,20 +769,15 @@ AFRAME.registerComponent('uipack-mediacontrols', {
         });
 
         this.bar.addEventListener("mouseenter", function (event){
-
+            self.cursor_over_bar = true;
             self.el.sceneEl.canvas.classList.remove("a-grab-cursor");
-
-
         });
 
         this.bar.addEventListener("mouseleave", function (event){
-
+            self.cursor_over_bar = false;
             self.el.sceneEl.canvas.classList.add("a-grab-cursor");
-
             clearTimeout(self.ray_timeout);
-
         });
-
     }
     else {
 
@@ -851,6 +860,11 @@ AFRAME.registerComponent('uipack-mediacontrols', {
     this.el.appendChild(this.back_plane);
 
 
+  },
+
+  // Touch/mouse cursor is currently over the controls.
+  cursor_is_over: function () {
+    return this.cursor_over_icon || this.cursor_over_bar;
   },
 
   update: function (oldData) {

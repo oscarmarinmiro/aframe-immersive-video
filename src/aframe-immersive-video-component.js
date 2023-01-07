@@ -13,7 +13,9 @@ AFRAME.registerComponent('immersive-video', {
       type: {type: 'string', default: "360"},
       theme: {'type': 'string', default: "dark"},
       controls: {type: 'boolean', default: true},
-      open: {type: 'boolean', default: true}
+      open: {type: 'boolean', default: true},
+      // use touch style interface for mobile instead of gaze
+      mobile_touch_ui: {type: 'boolean', default: false}
   },
 
   /**
@@ -63,11 +65,10 @@ AFRAME.registerComponent('immersive-video', {
         // If controls: call UIPACK Utils
 
         if(self.data.controls){
-            AFRAME_UIPACK.utils.insert_immersive_video_menu({el: self.el, theme: self.data.theme, open: self.data.open});
+            AFRAME_UIPACK.utils.insert_immersive_video_menu({
+                el: self.el, theme: self.data.theme, open: self.data.open, mobile_touch_ui: self.data.mobile_touch_ui
+            });
         }
-
-
-
   },
 
 

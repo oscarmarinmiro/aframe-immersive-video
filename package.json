@@ -58,5 +58,8 @@
       "examples/build.js",
       "dist/**"
     ]
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.10"
   }
 }

@@ -25,6 +25,7 @@ For [A-Frame](https://aframe.io).
 |  theme | The 'theme' of the video controls: "dark" or "light" | "dark" |
 | controls | Whether to show controls at the feet of the user | true |
 | open | Whether controls should be open or closed on video launch | true |
+| mobile_touch_ui | On mobile use a touch instead of gaze | false |
 ### Installation
 
 #### Browser

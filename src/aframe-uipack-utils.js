@@ -16,41 +16,57 @@ AFRAME_UIPACK.utils = {
 
         var el = options.el;
 
-        function insert_cursor_and_menu(scene, element, theme, open) {
-
+        function insert_cursor_and_menu(scene, element, theme, open, mobile_touch_ui) {
+            var touch_hide_ui = AFRAME.utils.isMobile() && mobile_touch_ui;
             var video_id = element.components["immersive-video"].video_id;
 
-            AFRAME_UIPACK.utils.set_cursor(scene);
+            AFRAME_UIPACK.utils.set_cursor(scene, theme, mobile_touch_ui);
 
             var menu = document.createElement("a-entity");
 
             menu.setAttribute("uipack-menu", {
-
                 theme: theme,
-
-                icons: [], buttons: [], media_id: video_id, open: open
-
+                icons: [],
+                buttons: [],
+                media_id: video_id,
+                open: open,
+                touch_hide_ui: touch_hide_ui
             });
-
 
             scene.appendChild(menu);
 
+            if (touch_hide_ui) {
+                AFRAME_UIPACK.utils.cursor.addEventListener("mousedown", function (ev) {
+                    let ui_menu = menu.components['uipack-menu'];
+                    let ui_controls = ui_menu.media_controls.components["uipack-mediacontrols"];
+                    if (ui_controls.cursor_is_over()) return;
+                    ui_menu.touch_hidden = !ui_menu.touch_hidden;
+
+                    if (ui_menu.touch_hidden) {
+                        ui_menu.menu_group.setAttribute("visible", false);
+                        AFRAME_UIPACK.utils.cursor.setAttribute("visible", false);
+                    } else {
+                        ui_menu.menu_group.setAttribute("visible", true);
+                        AFRAME_UIPACK.utils.cursor.setAttribute("visible", true);
+                    }
+                });
+            }
         }
 
         var scene = document.querySelector("a-scene");
 
         if (scene.renderStarted) {
-            insert_cursor_and_menu(scene, el, theme, open);
+            insert_cursor_and_menu(scene, el, theme, open, options.mobile_touch_ui);
         }
         else {
             scene.addEventListener("renderstart", function () {
-                insert_cursor_and_menu(scene, el, theme, open);
+                insert_cursor_and_menu(scene, el, theme, open, options.mobile_touch_ui);
             });
         }
     },
 
 
-    set_cursor: function (scene, theme) {
+    set_cursor: function (scene, theme, mobile_touch_ui) {
 
         var self = this;
 
@@ -122,8 +138,7 @@ AFRAME_UIPACK.utils = {
 
         }
 
-
-        AFRAME_UIPACK.cursor_mode = desktop ? "desktop" : (mobile ? "gaze" : "laser");
-
+        mobile_touch_ui = mobile && mobile_touch_ui;
+        AFRAME_UIPACK.cursor_mode = (desktop || mobile_touch_ui) ? "desktop" : (mobile ? "gaze" : "laser");
     }
 };
