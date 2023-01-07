@@ -36,10 +36,10 @@ AFRAME_UIPACK.utils = {
             scene.appendChild(menu);
 
             if (touch_hide_ui) {
-                AFRAME_UIPACK.utils.cursor.addEventListener("mousedown", function (ev) {
-                    let ui_menu = menu.components['uipack-menu'];
-                    let ui_controls = ui_menu.media_controls.components["uipack-mediacontrols"];
-                    if (ui_controls.cursor_is_over()) return;
+                AFRAME_UIPACK.utils.cursor.addEventListener("mousedown", function() {
+                    var ui_menu = menu.components['uipack-menu'];
+                    var ui_controls = ui_menu.media_controls.components["uipack-mediacontrols"];
+                    if (ui_controls.cursor_is_over() && !ui_menu.touch_hidden) return;
                     ui_menu.touch_hidden = !ui_menu.touch_hidden;
 
                     if (ui_menu.touch_hidden) {
